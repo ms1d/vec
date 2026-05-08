@@ -1,0 +1,2 @@
+/home/mahad/Projects/libs/vec/build/CMakeFiles/edit_cache.dir
+/home/mahad/Projects/libs/vec/build/CMakeFiles/rebuild_cache.dir

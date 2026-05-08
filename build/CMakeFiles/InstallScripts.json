@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/mahad/Projects/libs/vec/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
