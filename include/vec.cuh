@@ -41,17 +41,17 @@ struct vec_base {
 
 
 
-    __host__ __device__ constexpr float* derived_data() { return static_cast<Derived*>(this)->data; }
-    __host__ __device__ constexpr const float* derived_data() const { return static_cast<const Derived*>(this)->data; }
+    __host__ __device__ constexpr float* derived_data() noexcept { return static_cast<Derived*>(this)->data; }
+    __host__ __device__ constexpr const float* derived_data() const noexcept { return static_cast<const Derived*>(this)->data; }
 
 
 
-	__host__ __device__ constexpr vec_base() {}
-    __host__ __device__ constexpr vec_base(const float (&new_data)[dim]) {
+	__host__ __device__ constexpr vec_base() noexcept {}
+    __host__ __device__ constexpr vec_base(const float (&new_data)[dim]) noexcept {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] = new_data[i];
     }
-	__host__ __device__ constexpr vec_base(std::initializer_list<float> new_data) {
+	__host__ __device__ constexpr vec_base(std::initializer_list<float> new_data) noexcept {
 		assert(new_data.size() == dim);
 		float* d = derived_data();
 		auto it = new_data.begin();
@@ -60,13 +60,13 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr float operator[](size_t i) const {
+	__host__ __device__ constexpr float operator[](size_t i) const noexcept {
 		return derived_data()[i];
 	}
 
 
 
-    __host__ __device__ constexpr float mag() const {
+    __host__ __device__ constexpr float mag() const noexcept {
         const float* d = derived_data();
         float sum = 0;
         for (size_t i = 0; i < dim; i++) sum += d[i] * d[i];
@@ -75,7 +75,7 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr Derived norm() const {
+	__host__ __device__ constexpr Derived norm() const noexcept {
 		Derived res = static_cast<const Derived&>(*this);
 		res.norm_inplace();
 		return res;
@@ -83,7 +83,7 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr Derived& norm_inplace() {
+	__host__ __device__ constexpr Derived& norm_inplace() noexcept {
 		float magnitude = mag();
 		auto data = derived_data();
 		for (size_t i = 0; i < dim; i++) {
@@ -93,13 +93,13 @@ struct vec_base {
 	}
 
 
-    __host__ __device__ constexpr Derived operator+(const Derived& other) const {
+    __host__ __device__ constexpr Derived operator+(const Derived& other) const noexcept {
         Derived res = static_cast<const Derived&>(*this);
         res += other;
         return res;
     }
     
-	__host__ __device__ constexpr Derived& operator+=(const Derived& other) {
+	__host__ __device__ constexpr Derived& operator+=(const Derived& other) noexcept {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] += other.data[i];
         return static_cast<Derived&>(*this);
@@ -107,13 +107,13 @@ struct vec_base {
 
 
 
-    __host__ __device__ constexpr Derived operator-(const Derived& other) const {
+    __host__ __device__ constexpr Derived operator-(const Derived& other) const noexcept {
         Derived v = static_cast<const Derived&>(*this);
         v -= other;
         return v;
     }
     
-	__host__ __device__ constexpr Derived& operator-=(const Derived& other) {
+	__host__ __device__ constexpr Derived& operator-=(const Derived& other) noexcept {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] -= other.data[i];
         return static_cast<Derived&>(*this);
@@ -121,7 +121,7 @@ struct vec_base {
 
 
 
-    __host__ __device__ constexpr float operator*(const Derived& other) const { // dot
+    __host__ __device__ constexpr float operator*(const Derived& other) const noexcept { // dot product
         const float* d = derived_data();
         float sum = 0;
         for (size_t i = 0; i < dim; i++) sum += d[i] * other.data[i];
@@ -130,7 +130,7 @@ struct vec_base {
 
 
 
-    __host__ __device__ constexpr Derived& operator*=(float scalar) {
+    __host__ __device__ constexpr Derived& operator*=(float scalar) noexcept {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] *= scalar;
         return static_cast<Derived&>(*this);
@@ -138,7 +138,7 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr bool operator==(const vec_base<dim, Derived>& rhs) const {
+	__host__ __device__ constexpr bool operator==(const vec_base<dim, Derived>& rhs) const noexcept {
 		const float* ld = derived_data();
 		const float* rd = rhs.derived_data();
 
@@ -148,7 +148,7 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr Derived operator*(float scalar) const {
+	__host__ __device__ constexpr Derived operator*(float scalar) const noexcept {
 		Derived result = static_cast<const Derived&>(*this);
 		result *= scalar;
 		return result;
@@ -177,12 +177,12 @@ struct vec : vec_base<dim, vec<dim>> {
 
 // float * scalar must be a non-member function to allow float on lhs
 template<size_t dim>
-__host__ __device__ constexpr vec<dim> operator*(float scalar, const vec<dim>& v) { return v * scalar; }
+__host__ __device__ constexpr vec<dim> operator*(float scalar, const vec<dim>& v) noexcept { return v * scalar; }
 
 
 
 template<size_t dim> 
-constexpr std::ostream& operator<<(std::ostream& os, const vec<dim>& v) {
+constexpr std::ostream& operator<<(std::ostream& os, const vec<dim>& v) noexcept {
 	const float* d = v.data;
 	os << "(";
 	const char* sep = "";

@@ -23,13 +23,13 @@ struct vec<3> : vec_base<3, vec<3>> {
 
 
 
-    __host__ __device__ constexpr vec() {}
+    __host__ __device__ constexpr vec() noexcept {}
 
-    __host__ __device__ constexpr vec(float x, float y, float z) : x(x), y(y), z(z) {}
+    __host__ __device__ constexpr vec(float x, float y, float z) : x(x), y(y), z(z) noexcept {}
 
-	__host__ __device__ constexpr vec(const vec& other) : x(other.x), y(other.y), z(other.z) {}
+	__host__ __device__ constexpr vec(const vec& other) : x(other.x), y(other.y), z(other.z) noexcept {}
 
-    __host__ __device__ constexpr vec& operator=(const vec& other) {
+    __host__ __device__ constexpr vec& operator=(const vec& other) noexcept {
 		x = other.x; y = other.y; z = other.z;
 		return *this;
 	}
@@ -38,12 +38,12 @@ struct vec<3> : vec_base<3, vec<3>> {
 
 
     // Cross product
-    __host__ __device__ constexpr vec operator^(const vec& other) const {
+    __host__ __device__ constexpr vec operator^(const vec& other) const noexcept {
         vec res = *this;
         res ^= other;
         return res;
     }
-    __host__ __device__ constexpr vec& operator^=(const vec& other) {
+    __host__ __device__ constexpr vec& operator^=(const vec& other) noexcept {
         float _x = x, _y = y, _z = z;
         x = _y * other.z - _z * other.y;
         y = _z * other.x - _x * other.z;
