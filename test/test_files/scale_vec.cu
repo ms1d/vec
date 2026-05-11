@@ -69,9 +69,9 @@ struct scale_vec {
 	}
 
 	void scale_vec_example() {
-		vec<3> v{1,2,3};
+		vec<3> v{1.f,2.f,3.f};
 		float scalar = 2;
-		assert(scalar * v == v * scalar), assert(scalar * v == vec<3>(2,4,6));
+		assert(scalar * v == v * scalar), assert(scalar * v == vec<3>{2.f,4.f,6.f});
 	}
 };
 

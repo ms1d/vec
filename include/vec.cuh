@@ -2,7 +2,6 @@
 
 
 
-#include <initializer_list>
 #ifndef __host__
 #define __host__
 #endif
@@ -12,6 +11,8 @@
 
 
 
+#include <cassert>
+#include <initializer_list>
 #include <iostream> 
 #include "precision.cuh"
 
@@ -50,7 +51,8 @@ struct vec_base {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] = new_data[i];
     }
-	__host__ __device__ constexpr vec_base(std::initializer_list<float> new_data) requires (dim == new_data.size()) {
+	__host__ __device__ constexpr vec_base(std::initializer_list<float> new_data) {
+		assert(new_data.size() == dim);
 		float* d = derived_data();
 		auto it = new_data.begin();
 		for (size_t i = 0; i < dim; i++) d[i] = it[i];
@@ -163,7 +165,7 @@ template<size_t dim>
 struct vec : vec_base<dim, vec<dim>> {
 
 
-
+	using vec_base<dim, vec<dim>>::vec_base;
 	float data[dim];
 
 

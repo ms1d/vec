@@ -60,7 +60,7 @@ struct mag_vec {
 	}
 
 	void mag_vec_example() {
-		vec<3> v{1,2,3};
+		vec<3> v{1.f,2.f,3.f};
 		assert(math_precision::nearly_equal(v.mag(), __builtin_sqrtf(14)));
 	}
 };
