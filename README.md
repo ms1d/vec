@@ -6,7 +6,7 @@ base class for specialized vector types (e.g. 3D).
 
 ## Dependencies
 
-- `ms1d/common` as a sibling
+- [ms1d/common](https://github.com/ms1d/common) as a sibling
 
 ## Features
 
@@ -16,7 +16,9 @@ base class for specialized vector types (e.g. 3D).
 
 - **Specializations**: `vec<3>` includes `x, y, z` aliases via a union.
 
-- **Precision**: Equality tests use a default epsilon of `2e-6f`.
+- **Precision**: Equality tests use consistent accuracy definitions (see `ms1d/common`)
+
+- **Tests**: see `test` for the ctest suite
 
 ## Method Signatures
 
@@ -48,10 +50,8 @@ base class for specialized vector types (e.g. 3D).
 
 - `operator*=(float)`: Scalar multiplication assignment.
 
-- `operator^`, `operator^=`: Cross product (3D-specific).
-
 ## Implementation Details
 
 The library uses a `vec_base` template to share method logic across dimensions.
-Explicit operator overrides are provided in the `vec<3>` specialization to ensure
-robust LSP support in `.cu` files while maintaining full compiler optimization.
+See `include/vec2.cuh` and `include/vec3.cuh` to see how you can specialise
+the base class for specific dimension sizes.
