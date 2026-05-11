@@ -2,6 +2,7 @@
 
 
 
+#include <initializer_list>
 #ifndef __host__
 #define __host__
 #endif
@@ -49,6 +50,10 @@ struct vec_base {
         float* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] = new_data[i];
     }
+	__host__ __device__ constexpr vec_base(std::initializer_list<float> axis) {
+		float* d = derived_data();
+		for (size_t i = 0; i < dim; i++) d[i] = axis[i];
+	}
 
 
 

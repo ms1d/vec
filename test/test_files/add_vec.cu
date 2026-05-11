@@ -62,7 +62,7 @@ struct add_vec {
 		const vec<3> v1{0,1,2}, v2{0,1,4};
 		vec<3> res1 = v1 + v2, res2 = v2 + v1;
 		assert(res1 == res2);
-		assert(res1 == vec<3>(0, 2, 6));
+		assert(res1 == vec<3>{0, 2, 6});
 	}
 
 };
