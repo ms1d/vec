@@ -61,7 +61,7 @@ struct norm_vec {
 	void norm_vec_example() {
 		vec<3> v1{1.f,2.f,3.f}, v2 = v1.norm();
 		assert(math_precision::nearly_equal(v2.mag(), 1.0f));
-		assert(v2 == vec<3>{0.267261f,0.534522f,0.801784f});
+		assert((v2 == vec<3>{0.267261f,0.534522f,0.801784f}));
 	}
 };
 

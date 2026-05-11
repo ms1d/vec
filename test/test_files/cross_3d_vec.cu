@@ -49,7 +49,7 @@ void cross_3d_vec_example() {
 	vec<3> v1{0,1,2}, v2{2,4,6};
 	vec<3> res1 = v1 ^ v2, res2 = v2 ^ v1;
 	assert(res1 == -1.0f * res2);
-	assert(res1 == vec<3>{-2.f,4.f,-2.f});
+	assert((res1 == vec<3>{-2.f,4.f,-2.f}));
 }
 
 int main() {

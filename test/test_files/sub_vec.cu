@@ -61,7 +61,7 @@ struct sub_vec {
 
 	void sub_vec_example() {
 		vec<3> v1{2.f,4.f,6.f}, v2{1.f,2.f,3.f};
-		assert(v1 - v2 == vec<3>{1.f,2.f,3.f});
+		assert((v1 - v2 == vec<3>{1.f,2.f,3.f}));
 
 	}
 };
