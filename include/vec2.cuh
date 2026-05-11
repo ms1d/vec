@@ -24,9 +24,9 @@ struct vec<2> : vec_base<2, vec<2>> {
 
     __host__ __device__ constexpr vec() noexcept {}
 
-    __host__ __device__ constexpr vec(float x, float y) : x(x), y(y) noexcept {}
+    __host__ __device__ constexpr vec(float x, float y) noexcept : x(x), y(y) {}
 
-	__host__ __device__ constexpr vec(const vec& other) : x(other.x), y(other.y) noexcept {}
+	__host__ __device__ constexpr vec(const vec& other) noexcept : x(other.x), y(other.y) {}
 
     __host__ __device__ constexpr vec& operator=(const vec& other) noexcept {
 		x = other.x; y = other.y;
