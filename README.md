@@ -1,4 +1,4 @@
-# VEC(tor)
+# vec(tor)lib
 
 A header-only, multi-dimensional vector library for CUDA and C++.
 It uses the Curiously Recurring Template Pattern (CRTP) to provide a
@@ -6,7 +6,7 @@ base class for specialized vector types (e.g. 3D).
 
 ## Dependencies
 
-- [ms1d/common](https://github.com/ms1d/common) as a sibling
+- [ms1d/commonlib](https://github.com/ms1d/commonlib) as a sibling
 
 ## Features
 
