@@ -2,6 +2,7 @@
 
 
 
+#include <type_traits>
 #ifndef __host__
 #define __host__
 #endif
@@ -32,7 +33,8 @@
 //		for specialised vectors (e.g. 2D x and y, 3D x, y and z, 4D x, y, z and w...)
 //		see vec<3> below
 
-template<size_t dim, class Derived>
+template<size_t dim, class Derived, typename num_T = float>
+requires (std::is_arithmetic_v<num_T>)
 struct vec_base {
 
 
@@ -41,34 +43,34 @@ struct vec_base {
 
 
 
-    __host__ __device__ constexpr float* derived_data() noexcept { return static_cast<Derived*>(this)->data; }
-    __host__ __device__ constexpr const float* derived_data() const noexcept { return static_cast<const Derived*>(this)->data; }
+    __host__ __device__ constexpr num_T* derived_data() noexcept { return static_cast<Derived*>(this)->data; }
+    __host__ __device__ constexpr const num_T* derived_data() const noexcept { return static_cast<const Derived*>(this)->data; }
 
 
 
 	__host__ __device__ constexpr vec_base() noexcept {}
-    __host__ __device__ constexpr vec_base(const float (&new_data)[dim]) noexcept {
-        float* d = derived_data();
+    __host__ __device__ constexpr vec_base(const num_T (&new_data)[dim]) noexcept {
+        num_T* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] = new_data[i];
     }
-	__host__ __device__ constexpr vec_base(std::initializer_list<float> new_data) noexcept {
+	__host__ __device__ constexpr vec_base(std::initializer_list<num_T> new_data) noexcept {
 		assert(new_data.size() == dim);
-		float* d = derived_data();
+		num_T* d = derived_data();
 		auto it = new_data.begin();
 		for (size_t i = 0; i < dim; i++) d[i] = it[i];
 	}
 
 
 
-	__host__ __device__ constexpr float operator[](size_t i) const noexcept {
+	__host__ __device__ constexpr num_T operator[](size_t i) const noexcept {
 		return derived_data()[i];
 	}
 
 
 
-    __host__ __device__ constexpr float mag() const noexcept {
-        const float* d = derived_data();
-        float sum = 0;
+    __host__ __device__ constexpr num_T mag() const noexcept {
+        const num_T* d = derived_data();
+        num_T sum = 0;
         for (size_t i = 0; i < dim; i++) sum += d[i] * d[i];
         return __builtin_sqrtf(sum);
     }
@@ -84,7 +86,7 @@ struct vec_base {
 
 
 	__host__ __device__ constexpr Derived& norm_inplace() noexcept {
-		float magnitude = mag();
+		num_T magnitude = mag();
 		auto data = derived_data();
 		for (size_t i = 0; i < dim; i++) {
 			data[i] /= magnitude;
@@ -100,7 +102,7 @@ struct vec_base {
     }
     
 	__host__ __device__ constexpr Derived& operator+=(const Derived& other) noexcept {
-        float* d = derived_data();
+        num_T* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] += other.data[i];
         return static_cast<Derived&>(*this);
     }
@@ -114,24 +116,24 @@ struct vec_base {
     }
     
 	__host__ __device__ constexpr Derived& operator-=(const Derived& other) noexcept {
-        float* d = derived_data();
+        num_T* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] -= other.data[i];
         return static_cast<Derived&>(*this);
     }
 
 
 
-    __host__ __device__ constexpr float operator*(const Derived& other) const noexcept { // dot product
-        const float* d = derived_data();
-        float sum = 0;
+    __host__ __device__ constexpr num_T operator*(const Derived& other) const noexcept { // dot product
+        const num_T* d = derived_data();
+        num_T sum = 0;
         for (size_t i = 0; i < dim; i++) sum += d[i] * other.data[i];
         return sum;
     }
 
 
 
-    __host__ __device__ constexpr Derived& operator*=(float scalar) noexcept {
-        float* d = derived_data();
+    __host__ __device__ constexpr Derived& operator*=(num_T scalar) noexcept {
+        num_T* d = derived_data();
         for (size_t i = 0; i < dim; i++) d[i] *= scalar;
         return static_cast<Derived&>(*this);
     }
@@ -139,8 +141,8 @@ struct vec_base {
 
 
 	__host__ __device__ constexpr bool operator==(const vec_base<dim, Derived>& rhs) const noexcept {
-		const float* ld = derived_data();
-		const float* rd = rhs.derived_data();
+		const num_T* ld = derived_data();
+		const num_T* rd = rhs.derived_data();
 
 		for (size_t i = 0; i < dim; i++) if (!math_precision::nearly_equal(ld[i], rd[i])) return false;
 		return true;
@@ -148,7 +150,7 @@ struct vec_base {
 
 
 
-	__host__ __device__ constexpr Derived operator*(float scalar) const noexcept {
+	__host__ __device__ constexpr Derived operator*(num_T scalar) const noexcept {
 		Derived result = static_cast<const Derived&>(*this);
 		result *= scalar;
 		return result;
@@ -161,12 +163,13 @@ struct vec_base {
 
 
 
-template<size_t dim>
-struct vec : vec_base<dim, vec<dim>> {
+template<size_t dim, typename num_T = float>
+requires (std::is_arithmetic_v<num_T>)
+struct vec : vec_base<dim, vec<dim, num_T>, num_T> {
 
 
 	using vec_base<dim, vec<dim>>::vec_base;
-	float data[dim];
+	num_T data[dim];
 
 
 
@@ -175,15 +178,17 @@ struct vec : vec_base<dim, vec<dim>> {
 
 
 
-// float * scalar must be a non-member function to allow float on lhs
-template<size_t dim>
-__host__ __device__ constexpr vec<dim> operator*(float scalar, const vec<dim>& v) noexcept { return v * scalar; }
+// num_T * scalar must be a non-member function to allow float on lhs
+template<size_t dim, typename num_T = float>
+requires (std::is_arithmetic_v<num_T>)
+__host__ __device__ constexpr vec<dim> operator*(num_T scalar, const vec<dim>& v) noexcept { return v * scalar; }
 
 
 
-template<size_t dim> 
+template<size_t dim, typename num_T = float>
+requires (std::is_arithmetic_v<num_T>)
 constexpr std::ostream& operator<<(std::ostream& os, const vec<dim>& v) noexcept {
-	const float* d = v.data;
+	const num_T* d = v.data;
 	os << "(";
 	const char* sep = "";
 	for (size_t i = 0; i < dim; i++) {
